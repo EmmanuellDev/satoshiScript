@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ChatInterface from '../components/ChatInterface';
 import LearningResources from '../components/LearningResources';
 import { BookOpen, MessageCircle } from 'lucide-react';

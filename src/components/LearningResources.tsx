@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExternalLink, Book, Video, Code, FileText } from 'lucide-react';
 
 const LearningResources = () => {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Code2, Zap, Shield, Users } from 'lucide-react';
 import Particles from '../components/Particles';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Wallet, Check } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
 

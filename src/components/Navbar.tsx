@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Code2, Home, GraduationCap, Wallet } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';

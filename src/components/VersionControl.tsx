@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Download, Trash2 } from 'lucide-react';
+import { Clock, Download } from 'lucide-react';
 
 interface Version {
   id: string;
