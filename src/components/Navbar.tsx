@@ -1,11 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Code2, Home, GraduationCap, Wallet } from 'lucide-react';
+import { Code2, Home, GraduationCap } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
 import WalletButton from './WalletButton';
 
 const Navbar = () => {
   const location = useLocation();
-  const { isConnected } = useWallet();
+  const { } = useWallet();
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },

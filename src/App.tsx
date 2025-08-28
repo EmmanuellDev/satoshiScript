@@ -4,12 +4,14 @@ import HomePage from './pages/HomePage';
 import ConverterPage from './pages/ConverterPage';
 import TutorPage from './pages/TutorPage';
 import { WalletProvider } from './context/WalletContext';
+import Particles from './components/Particles';
+
 
 function App() {
   return (
     <WalletProvider>
       <Router>
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="min-h-screen bg-black">
           <Navbar />
           <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
             <Routes>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, Upload, Rocket, Loader2 } from 'lucide-react';
+import { Copy, Check, Rocket, Loader2 } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
 
 interface CodeEditorProps {

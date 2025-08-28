@@ -27,10 +27,10 @@ const features = [
 
 const HomePage = () => {
   return (
-    <div className="relative min-h-screen mt-8">
-      <div className="absolute inset-0 z-0">
+    <div className="relative min-h-screen mt-8 ">
+   
         <Particles
-          particleColors={['#6366f1', '#8b5cf6', '#a855f7']}
+          particleColors={['#ffffff', '#ffffff']}
           particleCount={120}
           particleSpread={12}
           speed={0.08}
@@ -39,10 +39,10 @@ const HomePage = () => {
           alphaParticles={true}
           disableRotation={false}
         />
-      </div>
+      
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 pb-32">
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-600/20 to-transparent"></div>
+        <div className="absolute inset-0 "></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 bg-clip-text text-transparent animate-pulse">
             Bridge the Gap to Stacks

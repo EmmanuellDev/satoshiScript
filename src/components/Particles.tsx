@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Renderer, Camera, Geometry, Program, Mesh } from "ogl";
 
-import './Particles.css';
-
 interface ParticlesProps {
   particleCount?: number;
   particleSpread?: number;
@@ -240,7 +238,7 @@ const Particles: React.FC<ParticlesProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`particles-container ${className}`}
+      className={`relative w-full h-full ${className}`}
     />
   );
 };
