@@ -10,13 +10,13 @@ const TutorPage = () => {
   return (
     <div className="min-h-screen pt-8 relative">
       {/* Particles Background */}
-      <div className="absolute inset-0 z-0">
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
         <Particles
-          particleColors={['#10b981', '#06b6d4', '#3b82f6']}
-          particleCount={100}
-          particleSpread={10}
-          speed={0.06}
-          particleBaseSize={70}
+          particleColors={['#ffffff', '#ffffff']}
+          particleCount={1200}
+          particleSpread={12}
+          speed={0.08}
+          particleBaseSize={100}
           moveParticlesOnHover={true}
           alphaParticles={true}
           disableRotation={false}

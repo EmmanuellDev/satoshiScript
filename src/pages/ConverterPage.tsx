@@ -67,13 +67,13 @@ const ConverterPage = () => {
   return (
     <div className="min-h-screen pt-8 relative">
       {/* Particles Background */}
-      <div className="absolute inset-0 z-0">
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
         <Particles
-          particleColors={['#6366f1', '#8b5cf6', '#a855f7']}
-          particleCount={120}
+          particleColors={['#ffffff', '#ffffff']}
+          particleCount={1200}
           particleSpread={12}
           speed={0.08}
-          particleBaseSize={60}
+          particleBaseSize={100}
           moveParticlesOnHover={true}
           alphaParticles={true}
           disableRotation={false}
