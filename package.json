@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stacks/connect": "^8.1.9",
+    "@stacks/network": "^7.2.0",
+    "@stacks/transactions": "^7.2.0",
     "lucide-react": "^0.542.0",
     "ogl": "^1.0.11",
     "react": "^19.1.1",
