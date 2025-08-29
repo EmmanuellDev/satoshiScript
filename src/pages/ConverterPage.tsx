@@ -5,6 +5,22 @@ import ConversionControls from '../components/ConversionControls';
 import DeployedReposPage from '../components/DeployedRepos';
 
 const ConverterPage: React.FC = () => {
+  // Format Clarity code for prettier output
+  function formatClarityCode(code: string): string[] {
+    let formatted = code.trim().replace(/\r\n|\r/g, '\n');
+    let indent = 0;
+    return formatted.split('\n').map(line => {
+      let open = (line.match(/\(/g) || []).length;
+      let close = (line.match(/\)/g) || []).length;
+      let result = '  '.repeat(indent) + line.trim();
+      indent += open - close;
+      if (indent < 0) indent = 0;
+      return result;
+    });
+  }
+
+  // For animated line-by-line generation
+  const [animatedClarityLines, setAnimatedClarityLines] = useState<string[]>([]);
   const [solidityCode, setSolidityCode] = useState('');
   const [clarityCode, setClarityCode] = useState('');
   const [explanation, setExplanation] = useState('');
@@ -41,7 +57,16 @@ const ConverterPage: React.FC = () => {
       const data = await response.json();
       
       if (data.clarity_code) {
-        setClarityCode(data.clarity_code);
+        const lines = formatClarityCode(data.clarity_code);
+        setAnimatedClarityLines([]);
+        setClarityCode('');
+        // Animate line-by-line generation
+        lines.forEach((line, i) => {
+          setTimeout(() => {
+            setAnimatedClarityLines(prev => [...prev, line]);
+            setClarityCode(prev => prev + (prev ? '\n' : '') + line);
+          }, i * 200); // 60ms per line
+        });
       }
       if (data.explanation) {
         setExplanation(data.explanation);
@@ -84,17 +109,25 @@ const ConverterPage: React.FC = () => {
             Transform your Ethereum smart contracts into Bitcoin-native Clarity contracts with AI-powered conversion
           </p>
         </div>
+<div className="flex justify-center gap-8 mt-6 mb-6">
+{explanation && !showExplanation && (
+  <button
+    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+  >
+    Deploy
+  </button>
+)}
 
-       {explanation && !showExplanation && (
-          <div className="max-w-7xl mx-auto mt-6 mb-6 flex justify-center">
-            <button
-              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
-              onClick={() => setShowExplanation(true)}
-            >
-              Explain Me
-            </button>
-          </div>
-        )}
+  {explanation && !showExplanation && (
+    <button
+      className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+      onClick={() => setShowExplanation(true)}
+    >
+      Explain Me
+    </button>
+  )}
+</div>
+
 
         {/* Error Display */}
         {error && (

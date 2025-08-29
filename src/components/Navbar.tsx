@@ -28,8 +28,9 @@ const Navbar = () => {
                 Satoshi Script
               </span>
             </Link>
-            
-            <div className="hidden md:flex space-x-1">
+          </div>
+          <div className="flex items-center space-x-22">
+            <div className="hidden md:flex space-x-6">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -49,9 +50,8 @@ const Navbar = () => {
                 );
               })}
             </div>
+            <WalletButton />
           </div>
-
-          <WalletButton />
         </div>
       </div>
     </nav>

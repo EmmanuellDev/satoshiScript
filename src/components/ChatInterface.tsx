@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Lightbulb } from 'lucide-react';
 
 interface Message {
@@ -19,6 +19,7 @@ const ChatInterface = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const quickQuestions = [
     "What is Clarity?",
@@ -26,6 +27,12 @@ const ChatInterface = () => {
     "Explain data types in Clarity",
     "What are maps and vars?",
   ];
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -41,42 +48,51 @@ const ChatInterface = () => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Make API call to the provided endpoint
+      const response = await fetch('https://satoshiscript-aiagent.onrender.com/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: inputValue }),
+      });
 
-    const botResponse: Message = {
-      id: (Date.now() + 1).toString(),
-      type: 'bot',
-      content: getBotResponse(inputValue),
-      timestamp: new Date(),
-    };
+      if (!response.ok) {
+        throw new Error('Failed to fetch response from API');
+      }
 
-    setMessages(prev => [...prev, botResponse]);
-    setIsTyping(false);
+      const data = await response.json();
+      await new Promise(res => setTimeout(res, 2000)); // AI thinking delay
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        // Assuming the API returns a 'response' field with the answer
+        content: data.response || 'Sorry, I could not process your request. Please try again.',
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('API Error:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        content: 'Oops! Something went wrong while fetching the response. Please try again later.',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleQuickQuestion = (question: string) => {
     setInputValue(question);
   };
 
-  const getBotResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase();
-    
-    if (input.includes('clarity')) {
-      return "Clarity is a decidable smart contract language that optimizes for predictability and security. Unlike other smart contract languages, Clarity is interpreted (not compiled) and the complete call graph of any function is statically knowable. This eliminates whole classes of bugs and makes Clarity contracts more secure.";
-    } else if (input.includes('function')) {
-      return "In Clarity, you can define functions using `define-public`, `define-private`, or `define-read-only`. Here's an example:\n\n```clarity\n(define-public (my-function (param uint))\n  (ok param)\n)\n```\n\n- `define-public`: Creates a public function that can be called by other contracts\n- `define-private`: Creates a private function only callable within the contract\n- `define-read-only`: Creates a read-only function that doesn't modify state";
-    } else if (input.includes('data type')) {
-      return "Clarity has several built-in data types:\n\n• `uint` - Unsigned integers\n• `int` - Signed integers\n• `bool` - Boolean values (true/false)\n• `principal` - Stacks addresses\n• `buff` - Byte buffers\n• `string-ascii` / `string-utf8` - String types\n• `(list)` - Lists of elements\n• `(tuple)` - Key-value pairs\n• `(optional)` - Values that may or may not exist\n• `(response)` - Success/error responses";
-    } else if (input.includes('map') || input.includes('var')) {
-      return "Data storage in Clarity:\n\n**Maps** - Key-value storage:\n```clarity\n(define-map user-balances principal uint)\n(map-set user-balances tx-sender u100)\n```\n\n**Data Variables** - Simple storage:\n```clarity\n(define-data-var counter uint u0)\n(var-set counter u10)\n(var-get counter)\n```\n\nMaps are for associative data, while data vars store single values.";
-    } else {
-      return "That's a great question! I can help you with:\n\n• Clarity syntax and language features\n• Smart contract patterns and best practices\n• Stacks blockchain concepts\n• Debugging and optimization tips\n\nTry asking about specific Clarity concepts, or use one of the quick questions below for common topics!";
-    }
-  };
-
   return (
-    <div className="bg-black/20 backdrop-blur-sm rounded-2xl border border-cyan-400/20 overflow-hidden h-96">
+    <div className="bg-black/20 backdrop-blur-lg bg-opacity-40 rounded-2xl border border-cyan-400/20 overflow-hidden h-100 shadow-xl max-w-3xl mx-auto">
       <div className="flex flex-col h-full">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
@@ -121,6 +137,7 @@ const ChatInterface = () => {
               </div>
             </div>
           )}
+          <div ref={chatEndRef} />
         </div>
         
         <div className="p-4 border-t border-cyan-400/20">
