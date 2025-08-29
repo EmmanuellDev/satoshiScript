@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage';
 import ConverterPage from './pages/ConverterPage';
 import TutorPage from './pages/TutorPage';
 import { WalletProvider } from './context/WalletContext';
-import Particles from './components/Particles';
+import VersionPage from './pages/VersionPage';
 
 
 function App() {
@@ -18,6 +18,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/converter" element={<ConverterPage />} />
               <Route path="/tutor" element={<TutorPage />} />
+              <Route path="/history" element={<VersionPage />} />
             </Routes>
           </main>
         </div>

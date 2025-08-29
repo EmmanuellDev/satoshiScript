@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Code2, Home, GraduationCap } from 'lucide-react';
+import { Code2, Home, GraduationCap, HistoryIcon } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
 import WalletButton from './WalletButton';
 
@@ -11,6 +11,7 @@ const Navbar = () => {
     { path: '/', icon: Home, label: 'Home' },
     { path: '/converter', icon: Code2, label: 'Converter' },
     { path: '/tutor', icon: GraduationCap, label: 'AI Tutor' },
+    { path: '/history', icon: HistoryIcon, label: 'Deploy History' },
   ];
 
   return (
@@ -24,7 +25,7 @@ const Navbar = () => {
                 <div className="absolute inset-0 bg-purple-400 opacity-20 blur-lg group-hover:opacity-30 transition-opacity duration-300"></div>
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Sol2Clarity
+                Satoshi Script
               </span>
             </Link>
             

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import CodeEditor from '../components/CodeEditor';
 import ConversionControls from '../components/ConversionControls';
-import VersionControl from '../components/VersionControl';
 import Particles from '../components/Particles';
+import DeployedReposPage from '../components/DeployedRepos';
 
 const ConverterPage = () => {
   const [solidityCode, setSolidityCode] = useState('');
@@ -57,11 +57,6 @@ const ConverterPage = () => {
     setVersions([...versions, newVersion]);
     
     setIsConverting(false);
-  };
-
-  const handleLoadVersion = (version: any) => {
-    setSolidityCode(version.solidityCode);
-    setClarityCode(version.clarityCode);
   };
 
   return (
@@ -138,13 +133,7 @@ contract SimpleCounter {
           hasInput={!!solidityCode.trim()}
           />
         </div>
-
-        <div className="relative z-10">
-          <VersionControl
-          versions={versions}
-          onLoadVersion={handleLoadVersion}
-          />
-        </div>
+        <DeployedReposPage />
       </div>
     </div>
   );

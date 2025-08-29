@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, Rocket, Loader2 } from 'lucide-react';
+import { Copy, Check, GitCommit, Loader2 } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
 
 interface CodeEditorProps {
@@ -26,7 +26,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [copied, setCopied] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployedAddress, setDeployedAddress] = useState<string | null>(null);
-  const { isConnected } = useWallet();
+  const [contractRepoName, setContractRepoName] = useState('');
+  const [showContractNameInput, setShowContractNameInput] = useState(false);
+  const { isConnected, address } = useWallet();
 
   const handleCopy = async () => {
     if (value) {
@@ -36,17 +38,66 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   };
 
-  const handleDeploy = async () => {
+  const handleDeployClick = () => {
     if (!isConnected || !value) return;
     
+    // Show contract name input dialog
+    setShowContractNameInput(true);
+  };
+
+  const handleDeployConfirm = async () => {
+    if (!contractRepoName.trim()) {
+      alert('Please enter a contract repository name');
+      return;
+    }
+
+    if (!address) {
+      alert('Wallet not connected. Please connect your wallet first.');
+      return;
+    }
+
     setIsDeploying(true);
-    // Simulate deployment delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    setShowContractNameInput(false);
     
-    // Mock contract address
-    const mockAddress = 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.my-contract';
-    setDeployedAddress(mockAddress);
-    setIsDeploying(false);
+    try {
+      // Format the contract code as a JSON object
+      const contractData = {
+        contract: {
+          code: value,
+        }
+      };
+
+      const response = await fetch('https://dot-clar-ipfs.onrender.com/api/deploy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contractCode: contractData,
+          contractRepoName: contractRepoName.trim(),
+          walletAddress: address,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setDeployedAddress(data.contractAddress || 'Contract deployed successfully!');
+      } else {
+        throw new Error(data.message || `Deployment failed: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Deployment error:', error);
+      alert(`Deployment failed: ${error.message}`);
+    } finally {
+      setIsDeploying(false);
+      setContractRepoName('');
+    }
+  };
+
+  const handleDeployCancel = () => {
+    setShowContractNameInput(false);
+    setContractRepoName('');
   };
 
   return (
@@ -74,25 +125,25 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           
           {showDeployButton && value && !isConverting && (
             <button
-              onClick={handleDeploy}
+              onClick={handleDeployClick}
               disabled={!isConnected || isDeploying}
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                 !isConnected
                   ? 'bg-gray-600/50 text-gray-400 cursor-not-allowed'
                   : isDeploying
-                  ? 'bg-purple-600/50 text-purple-300'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/30'
+                  ? 'bg-blue-600/50 text-blue-300'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30'
               }`}
             >
               {isDeploying ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Deploying...</span>
+                  <span>Committing...</span>
                 </>
               ) : (
                 <>
-                  <Rocket className="h-4 w-4" />
-                  <span>Deploy</span>
+                  <GitCommit className="h-4 w-4" />
+                  <span>Commit Changes</span>
                 </>
               )}
             </button>
@@ -124,9 +175,40 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </div>
         )}
         
+        {showContractNameInput && (
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-gray-800 p-6 rounded-xl max-w-md w-full">
+              <h3 className="text-white text-lg font-semibold mb-4">Enter Contract Repository Name</h3>
+              <p className="text-gray-300 mb-4">Please provide a name for your contract repository:</p>
+              <input
+                type="text"
+                value={contractRepoName}
+                onChange={(e) => setContractRepoName(e.target.value)}
+                placeholder="e.g., my-contract"
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 mb-4"
+                autoFocus
+              />
+              <div className="flex space-x-3 justify-end">
+                <button
+                  onClick={handleDeployCancel}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeployConfirm}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all duration-300"
+                >
+                  Commit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {deployedAddress && (
           <div className="absolute top-4 right-4 bg-green-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm">
-            <p className="font-medium">Deployed successfully!</p>
+            <p className="font-medium">Committed successfully!</p>
             <p className="text-green-100 text-xs mt-1 font-mono">{deployedAddress}</p>
           </div>
         )}
