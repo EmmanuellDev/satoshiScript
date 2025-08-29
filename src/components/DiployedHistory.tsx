@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
-  Chip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Paper,
-  Grid,
-  Container
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CodeIcon from '@mui/icons-material/Code';
-import HistoryIcon from '@mui/icons-material/History';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+  ArrowRight,
+  HistoryIcon,
+  CodeIcon,
+  Loader2
+} from 'lucide-react';
+import Particles from '../components/Particles';
+import { MdAccountBalanceWallet } from "react-icons/md";
+import { IoExpand } from "react-icons/io5";
 
 // Define types for our deployment data
 interface ContractCode {
@@ -55,6 +43,7 @@ const DeployedHistory: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const [expandedDeployment, setExpandedDeployment] = useState<string | null>(null);
 
   const fetchDeploymentHistory = async () => {
     if (!isConnected || !address) {
@@ -111,6 +100,10 @@ const DeployedHistory: React.FC = () => {
     fetchDeploymentHistory();
   };
 
+  const toggleDeployment = (id: string) => {
+    setExpandedDeployment(expandedDeployment === id ? null : id);
+  };
+
   useEffect(() => {
     // Clear states when wallet connection changes
     if (!isConnected) {
@@ -122,150 +115,201 @@ const DeployedHistory: React.FC = () => {
 
   if (walletLoading) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-          <CircularProgress />
-        </Box>
-      </Container>
+      <div className="relative min-h-screen">
+        <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+          <Particles
+            particleColors={['#00D4FF', '#0099FF', '#ffffff']}
+            particleCount={1200}
+            particleSpread={12}
+            speed={0.08}
+            particleBaseSize={100}
+            moveParticlesOnHover={true}
+            alphaParticles={true}
+            disableRotation={false}
+          />
+        </div>
+        <div className="relative z-10 flex justify-center items-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+        </div>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-        <Box display="flex" alignItems="center" mb={2}>
-          <HistoryIcon sx={{ mr: 1, fontSize: 32 }} />
-          <Typography variant="h4" component="h1">
-            Deployment History
-          </Typography>
-        </Box>
+    <div className="relative min-h-screen">
+      {/* Full Background Particles - Updated with Electric Blue colors */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <Particles
+          particleColors={['#00D4FF', '#0099FF', '#ffffff']}
+          particleCount={1200}
+          particleSpread={12}
+          speed={0.08}
+          particleBaseSize={100}
+          moveParticlesOnHover={true}
+          alphaParticles={true}
+          disableRotation={false}
+        />
+      </div>
+      
+      {/* Enhanced Floating Elements with Electric Blue theme */}
+      <div className="absolute top-1/4 left-10 w-20 h-20 bg-cyan-400/20 rounded-full blur-xl animate-pulse"></div>
+      <div className="absolute top-1/3 right-10 w-16 h-16 bg-blue-400/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+      <div className="absolute bottom-1/4 left-1/4 w-12 h-12 bg-cyan-300/20 rounded-full blur-xl animate-pulse delay-500"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-14 h-14 bg-blue-300/20 rounded-full blur-xl animate-pulse delay-700"></div>
 
-        {!isConnected ? (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            Please connect your wallet to view deployment history.
-          </Alert>
-        ) : (
-          <>
-            <Box display="flex" alignItems="center" mb={2}>
-              <AccountBalanceWalletIcon sx={{ mr: 1 }} />
-              <Typography variant="body1">
-                Connected wallet: <strong>{address}</strong>
-              </Typography>
-            </Box>
+      {/* Content Container - Positioned above particles */}
+      <div className="relative z-10 py-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div className="bg-black/20 backdrop-blur-sm rounded-2xl border border-cyan-400/20 p-6 mb-8 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-xl hover:shadow-cyan-400/20">
+          <div className="flex items-center mb-4">
+            <HistoryIcon className="h-8 w-8 text-cyan-400 mr-3" />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              Deployment History
+            </h1>
+          </div>
 
-            <Box component="form" onSubmit={handleSubmit} sx={{ mb: 3 }}>
-              <Grid container spacing={2} alignItems="flex-end">
-                <Grid item xs={12} sm={8}>
-                  <TextField
-                    fullWidth
-                    label="Repository Name"
+          {!isConnected ? (
+            <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-4">
+              <p className="text-cyan-300">Please connect your wallet to view deployment history.</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center mb-6">
+                <MdAccountBalanceWallet className="h-5 w-5 text-cyan-400 mr-2" />
+                <p className="text-gray-300">
+                  Connected wallet: <strong className="text-cyan-300">{address}</strong>
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="mb-6">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <input
+                    type="text"
                     value={repoName}
                     onChange={(e) => setRepoName(e.target.value)}
                     placeholder="Enter your contract repository name"
-                    variant="outlined"
+                    className="flex-grow bg-gray-800/50 border border-cyan-400/30 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 backdrop-blur-sm"
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Button
+                  <button
                     type="submit"
-                    variant="contained"
                     disabled={loading}
-                    fullWidth
-                    sx={{ height: '56px' }}
+                    className={`flex items-center justify-center px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                      loading
+                        ? 'bg-cyan-600/50 text-cyan-300 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/60'
+                    }`}
                   >
-                    {loading ? <CircularProgress size={24} /> : 'Fetch History'}
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
+                    {loading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <span>Fetch History</span>
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
+              {error && (
+                <div className="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                  <p className="text-red-300">{error}</p>
+                </div>
+              )}
 
-            {success && (
-              <Alert severity="success" sx={{ mb: 2 }}>
-                {success}
-              </Alert>
-            )}
-          </>
+              {success && (
+                <div className="bg-green-500/10 border border-green-400/30 rounded-xl p-4 mb-4">
+                  <p className="text-green-300">{success}</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {deployments.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent mb-4">
+              Deployment Results for "{repoName}"
+            </h2>
+            <p className="text-gray-400 mb-6">
+              Found {deployments.length} deployment{deployments.length !== 1 ? 's' : ''}
+            </p>
+
+            <div className="space-y-4">
+              {deployments.map((deployment, index) => (
+                <div
+                  key={deployment.id || index}
+                  className="bg-black/20 backdrop-blur-sm rounded-2xl border border-cyan-400/20 p-6 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-xl hover:shadow-cyan-400/20"
+                >
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">
+                        Version: {deployment.version || 'N/A'}
+                      </h3>
+                      <p className="text-gray-400">
+                        Deployed at: {formatDate(deployment.deployedAt)}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        deployment.codeChanged
+                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
+                          : 'bg-gray-600/50 text-gray-300 border border-gray-500/30'
+                      }`}
+                    >
+                      {deployment.codeChanged ? 'Code Changed' : 'No Changes'}
+                    </span>
+                  </div>
+
+                  <div className="mb-4">
+                    <p className="text-gray-300 break-all">
+                      <strong>Contract Hash:</strong> {deployment.contractCodeHash || 'N/A'}
+                    </p>
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={() => toggleDeployment(deployment.id || `deployment-${index}`)}
+                      className="flex items-center justify-between w-full p-3 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-xl border border-cyan-400/30 transition-all duration-300"
+                    >
+                      <div className="flex items-center">
+                        <CodeIcon className="h-5 w-5 text-cyan-400 mr-2" />
+                        <span className="text-cyan-300">View Contract Code</span>
+                      </div>
+                      <IoExpand
+                        className={`h-5 w-5 text-cyan-400 transition-transform duration-300 ${
+                          expandedDeployment === (deployment.id || `deployment-${index}`)
+                            ? 'rotate-180'
+                            : ''
+                        }`}
+                      />
+                    </button>
+
+                    {expandedDeployment === (deployment.id || `deployment-${index}`) && (
+                      <div className="mt-4 p-4 bg-gray-800/50 rounded-xl border border-cyan-400/20">
+                        <h4 className="text-sm font-semibold text-cyan-300 mb-2">Contract Code:</h4>
+                        <pre className="bg-black/30 p-4 rounded-lg overflow-auto text-sm text-gray-200 border border-cyan-400/10">
+                          {deployment.contractCode && deployment.contractCode.contract
+                            ? deployment.contractCode.contract.code
+                            : 'No contract code available'}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
-      </Paper>
 
-      {deployments.length > 0 && (
-        <Box>
-          <Typography variant="h5" component="h2" gutterBottom>
-            Deployment Results for "{repoName}"
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            Found {deployments.length} deployment{deployments.length !== 1 ? 's' : ''}
-          </Typography>
-
-          {deployments.map((deployment, index) => (
-            <Card key={deployment.id || index} sx={{ mb: 2 }}>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                  <Box>
-                    <Typography variant="h6" component="h3">
-                      Version: {deployment.version || 'N/A'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Deployed at: {formatDate(deployment.deployedAt)}
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={deployment.codeChanged ? 'Code Changed' : 'No Changes'}
-                    color={deployment.codeChanged ? 'primary' : 'default'}
-                    size="small"
-                  />
-                </Box>
-
-                <Box mb={2}>
-                  <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                    <strong>Contract Hash:</strong> {deployment.contractCodeHash || 'N/A'}
-                  </Typography>
-                </Box>
-
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Box display="flex" alignItems="center">
-                      <CodeIcon sx={{ mr: 1 }} />
-                      <Typography>View Contract Code</Typography>
-                    </Box>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Contract Code:
-                    </Typography>
-                    <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50', overflow: 'auto' }}>
-                      <pre style={{ 
-                        margin: 0, 
-                        fontSize: '12px',
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-all'
-                      }}>
-                        {deployment.contractCode && deployment.contractCode.contract 
-                          ? deployment.contractCode.contract.code
-                          : 'No contract code available'
-                        }
-                      </pre>
-                    </Paper>
-                  </AccordionDetails>
-                </Accordion>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      )}
-
-      {isConnected && deployments.length === 0 && !loading && repoName && (
-        <Alert severity="info">
-          No deployment history found for repository "{repoName}" with your connected wallet.
-        </Alert>
-      )}
-    </Container>
+        {isConnected && deployments.length === 0 && !loading && repoName && (
+          <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4">
+            <p className="text-cyan-300">
+              No deployment history found for repository "{repoName}" with your connected wallet.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
