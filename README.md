@@ -181,10 +181,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Contact
 
-- **Project Repository**: [Your GitHub Repo]
-- **Live Application**: [Your Deployment URL]
-- **Email**: [Your Email]
-- **Twitter**: [Your Twitter Handle]
+- **Project Repository**: [https://github.com/EmmanuellDev/satoshiScript | https://github.com/EmmanuellDev/dotClar-ipfsBack | https://github.com/gokkull-15/satoshiscript-ai.git | https://github.com/gokkull-15/satoshiscript-aiagent.git]
+- **Live Application**: [https://drive.google.com/drive/folders/1PMRuePSAz6nFANadt5CkU7LFTANjbays?usp=sharing]
 
 ---
 
