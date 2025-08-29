@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useWallet } from '../context/WalletContext'; // Adjust the import path as needed
+import { useWallet } from '../context/WalletContext';
 import {
   Box,
   Card,
@@ -23,22 +23,10 @@ import HistoryIcon from '@mui/icons-material/History';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 // Define types for our deployment data
-interface ContractABI {
-  type: string;
-  name: string;
-  inputs: Array<{
-    name: string;
-    type: string;
-  }>;
-  outputs: Array<{
-    name?: string;
-    type: string;
-  }>;
-}
-
 interface ContractCode {
-  abi: ContractABI[];
-  bytecode: string;
+  contract: {
+    code: string;
+  };
 }
 
 interface Deployment {
@@ -94,13 +82,14 @@ const DeployedHistory: React.FC = () => {
 
       const data: ApiResponse = await response.json();
 
-      if (data.success) {
+      if (data.success && data.data && data.data.deployments) {
         setDeployments(data.data.deployments);
         setSuccess(data.message);
       } else {
-        throw new Error(data.message);
+        throw new Error(data.message || 'Invalid response format');
       }
     } catch (err) {
+      console.error('Error fetching deployment history:', err);
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
@@ -108,8 +97,13 @@ const DeployedHistory: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -210,12 +204,12 @@ const DeployedHistory: React.FC = () => {
           </Typography>
 
           {deployments.map((deployment, index) => (
-            <Card key={deployment.id} sx={{ mb: 2 }}>
+            <Card key={deployment.id || index} sx={{ mb: 2 }}>
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
                   <Box>
                     <Typography variant="h6" component="h3">
-                      Version: {deployment.version}
+                      Version: {deployment.version || 'N/A'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Deployed at: {formatDate(deployment.deployedAt)}
@@ -230,7 +224,7 @@ const DeployedHistory: React.FC = () => {
 
                 <Box mb={2}>
                   <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                    <strong>Contract Hash:</strong> {deployment.contractCodeHash}
+                    <strong>Contract Hash:</strong> {deployment.contractCodeHash || 'N/A'}
                   </Typography>
                 </Box>
 
@@ -238,26 +232,25 @@ const DeployedHistory: React.FC = () => {
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Box display="flex" alignItems="center">
                       <CodeIcon sx={{ mr: 1 }} />
-                      <Typography>View Contract Details</Typography>
+                      <Typography>View Contract Code</Typography>
                     </Box>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography variant="subtitle2" gutterBottom>
-                      ABI:
+                      Contract Code:
                     </Typography>
                     <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50', overflow: 'auto' }}>
-                      <pre>
-                        {JSON.stringify(deployment.contractCode.abi, null, 2)}
+                      <pre style={{ 
+                        margin: 0, 
+                        fontSize: '12px',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-all'
+                      }}>
+                        {deployment.contractCode && deployment.contractCode.contract 
+                          ? deployment.contractCode.contract.code
+                          : 'No contract code available'
+                        }
                       </pre>
-                    </Paper>
-
-                    <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
-                      Bytecode (truncated):
-                    </Typography>
-                    <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50', overflow: 'auto' }}>
-                      <Typography variant="caption" sx={{ wordBreak: 'break-all' }}>
-                        {deployment.contractCode.bytecode.substring(0, 100)}...
-                      </Typography>
                     </Paper>
                   </AccordionDetails>
                 </Accordion>
