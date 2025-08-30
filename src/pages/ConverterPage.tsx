@@ -1,18 +1,19 @@
 // ConverterPage.tsx
-import React, { useState } from 'react';
-import CodeEditor from '../components/CodeEditor';
-import ConversionControls from '../components/ConversionControls';
-import DeployedReposPage from '../components/DeployedRepos';
+import React, { useState } from "react";
+import CodeEditor from "../components/CodeEditor";
+import ConversionControls from "../components/ConversionControls";
+import DeployedReposPage from "../components/DeployedRepos";
+import ClarityFloatingPlugin from "../components/ClarityFloatingPlugin";
 
 const ConverterPage: React.FC = () => {
   // Format Clarity code for prettier output
   function formatClarityCode(code: string): string[] {
-    let formatted = code.trim().replace(/\r\n|\r/g, '\n');
+    const formatted = code.trim().replace(/\r\n|\r/g, "\n");
     let indent = 0;
-    return formatted.split('\n').map(line => {
-      let open = (line.match(/\(/g) || []).length;
-      let close = (line.match(/\)/g) || []).length;
-      let result = '  '.repeat(indent) + line.trim();
+    return formatted.split("\n").map((line) => {
+      const open = (line.match(/\(/g) || []).length;
+      const close = (line.match(/\)/g) || []).length;
+      const result = "  ".repeat(indent) + line.trim();
       indent += open - close;
       if (indent < 0) indent = 0;
       return result;
@@ -20,51 +21,57 @@ const ConverterPage: React.FC = () => {
   }
 
   // For animated line-by-line generation
-  const [animatedClarityLines, setAnimatedClarityLines] = useState<string[]>([]);
-  const [solidityCode, setSolidityCode] = useState('');
-  const [clarityCode, setClarityCode] = useState('');
-  const [explanation, setExplanation] = useState('');
+  const [animatedClarityLines, setAnimatedClarityLines] = useState<string[]>(
+    []
+  );
+  const [solidityCode, setSolidityCode] = useState("");
+  const [clarityCode, setClarityCode] = useState("");
+  const [explanation, setExplanation] = useState("");
   const [isConverting, setIsConverting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [errorLines, setErrorLines] = useState<number[]>([]);
 
   const handleConvert = async () => {
     if (!solidityCode.trim()) {
-      setError('Please enter Solidity code to convert');
+      setError("Please enter Solidity code to convert");
       return;
     }
 
     setIsConverting(true);
     setError(null);
-    setClarityCode('');
-    setExplanation('');
+    setClarityCode("");
+    setExplanation("");
 
     try {
-      const response = await fetch('https://satoshiscript-ai.onrender.com/convert-explain', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          solidity_code: solidityCode
-        }),
-      });
+      const response = await fetch(
+        "https://satoshiscript-ai-2.onrender.com/convert-explain",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            solidity_code: solidityCode,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      
+
       if (data.clarity_code) {
         const lines = formatClarityCode(data.clarity_code);
         setAnimatedClarityLines([]);
-        setClarityCode('');
+        setClarityCode("");
         // Animate line-by-line generation
         lines.forEach((line, i) => {
           setTimeout(() => {
-            setAnimatedClarityLines(prev => [...prev, line]);
-            setClarityCode(prev => prev + (prev ? '\n' : '') + line);
+            setAnimatedClarityLines((prev) => [...prev, line]);
+            setClarityCode((prev) => prev + (prev ? "\n" : "") + line);
           }, i * 200); // 60ms per line
         });
       }
@@ -72,15 +79,18 @@ const ConverterPage: React.FC = () => {
         setExplanation(data.explanation);
         setShowExplanation(false); // Reset explanation view on new conversion
       }
-      
+
       // Handle any error from the API response
       if (data.error) {
         setError(data.error);
       }
-
     } catch (err) {
-      console.error('Conversion error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to convert contract. Please try again.');
+      console.error("Conversion error:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to convert contract. Please try again."
+      );
     } finally {
       setIsConverting(false);
     }
@@ -92,13 +102,13 @@ const ConverterPage: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/20 via-black to-black"></div>
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
-      
+
       {/* Floating elements */}
       <div className="absolute top-20 left-10 w-4 h-4 bg-cyan-400/20 rounded-full blur-sm animate-pulse"></div>
       <div className="absolute top-40 right-20 w-3 h-3 bg-blue-400/20 rounded-full blur-sm animate-pulse delay-500"></div>
       <div className="absolute bottom-40 left-20 w-5 h-5 bg-cyan-300/20 rounded-full blur-sm animate-pulse delay-1000"></div>
       <div className="absolute bottom-20 right-10 w-2 h-2 bg-blue-300/20 rounded-full blur-sm animate-pulse delay-1500"></div>
-      
+
       <div className="relative z-10 container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -106,28 +116,26 @@ const ConverterPage: React.FC = () => {
             Solidity to Clarity Converter
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Transform your Ethereum smart contracts into Bitcoin-native Clarity contracts with AI-powered conversion
+            Transform your Ethereum smart contracts into Bitcoin-native Clarity
+            contracts with AI-powered conversion
           </p>
         </div>
-<div className="flex justify-center gap-8 mt-6 mb-6">
-{explanation && !showExplanation && (
-  <button
-    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
-  >
-    Deploy
-  </button>
-)}
+        <div className="flex justify-center gap-8 mt-6 mb-6">
+          {explanation && !showExplanation && (
+            <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300">
+              Deploy
+            </button>
+          )}
 
-  {explanation && !showExplanation && (
-    <button
-      className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
-      onClick={() => setShowExplanation(true)}
-    >
-      Explain Me
-    </button>
-  )}
-</div>
-
+          {explanation && !showExplanation && (
+            <button
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+              onClick={() => setShowExplanation(true)}
+            >
+              Explain Me
+            </button>
+          )}
+        </div>
 
         {/* Error Display */}
         {error && (
@@ -165,7 +173,7 @@ contract SimpleStorage {
     }
 }`}
           />
-          
+
           <CodeEditor
             title="Clarity Contract"
             language="clarity"
@@ -175,6 +183,7 @@ contract SimpleStorage {
             readOnly={true}
             showDeployButton={true}
             isConverting={isConverting}
+            errorLines={errorLines}
           />
         </div>
 
@@ -214,7 +223,23 @@ contract SimpleStorage {
             </div>
           </div>
         )}
+
+        {/* Clarity Code Analysis Floating Plugin */}
+        {clarityCode && (
+          <ClarityFloatingPlugin
+            clarityCode={clarityCode}
+            onCodeRectified={(rectifiedCode) => {
+              setClarityCode(rectifiedCode);
+              // Update animated lines for visual consistency
+              const lines = formatClarityCode(rectifiedCode);
+              setAnimatedClarityLines(lines);
+            }}
+            onErrorLinesChange={setErrorLines}
+          />
+        )}
+
         <DeployedReposPage />
+
       </div>
     </div>
   );
