@@ -85,7 +85,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       }
     } catch (error) {
       console.error('Deployment error:', error);
-      alert(`Deployment failed: ${error.message}`);
+      let message = 'Unknown error';
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === 'string') {
+        message = error;
+      }
+      alert(`Deployment failed: ${message}`);
     } finally {
       setIsDeploying(false);
       setContractRepoName('');

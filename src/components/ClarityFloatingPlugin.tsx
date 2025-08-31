@@ -38,7 +38,6 @@ const ClarityFloatingPlugin: React.FC<ClarityFloatingPluginProps> = ({
     lines.forEach((line, index) => {
       const lineNumber = index + 1;
       const trimmedLine = line.trim();
-      const originalLine = line;
 
       // Skip empty lines and comments
       if (!trimmedLine || trimmedLine.startsWith(";;")) return;
@@ -281,7 +280,7 @@ const ClarityFloatingPlugin: React.FC<ClarityFloatingPluginProps> = ({
         // Fix function definitions
         .replace(
           /function\s+(\w+)\s*\(([^)]*)\)\s*(public|private|view|pure|payable)?\s*(returns\s*\([^)]*\))?\s*\{/g,
-          (match, name, params, visibility) => {
+          (name, params, visibility) => {
             const clarityVisibility =
               visibility === "view" || visibility === "pure"
                 ? "read-only"

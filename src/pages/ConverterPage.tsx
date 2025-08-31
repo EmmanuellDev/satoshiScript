@@ -21,16 +21,14 @@ const ConverterPage: React.FC = () => {
   }
 
   // For animated line-by-line generation
-  const [animatedClarityLines, setAnimatedClarityLines] = useState<string[]>(
-    []
-  );
+  // Removed unused 'animatedClarityLines' state
   const [solidityCode, setSolidityCode] = useState("");
   const [clarityCode, setClarityCode] = useState("");
   const [explanation, setExplanation] = useState("");
   const [isConverting, setIsConverting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [errorLines, setErrorLines] = useState<number[]>([]);
+  // Removed unused errorLines state
 
   const handleConvert = async () => {
     if (!solidityCode.trim()) {
@@ -65,12 +63,12 @@ const ConverterPage: React.FC = () => {
 
       if (data.clarity_code) {
         const lines = formatClarityCode(data.clarity_code);
-        setAnimatedClarityLines([]);
+  // Removed setAnimatedClarityLines([]) since state is deleted
         setClarityCode("");
         // Animate line-by-line generation
         lines.forEach((line, i) => {
           setTimeout(() => {
-            setAnimatedClarityLines((prev) => [...prev, line]);
+            // Removed setAnimatedClarityLines update since state is deleted
             setClarityCode((prev) => prev + (prev ? "\n" : "") + line);
           }, i * 200); // 60ms per line
         });
@@ -183,7 +181,7 @@ contract SimpleStorage {
             readOnly={true}
             showDeployButton={true}
             isConverting={isConverting}
-            errorLines={errorLines}
+            // ...existing code...
           />
         </div>
 
@@ -230,11 +228,9 @@ contract SimpleStorage {
             clarityCode={clarityCode}
             onCodeRectified={(rectifiedCode) => {
               setClarityCode(rectifiedCode);
-              // Update animated lines for visual consistency
-              const lines = formatClarityCode(rectifiedCode);
-              setAnimatedClarityLines(lines);
+              // Removed animated lines update for visual consistency
             }}
-            onErrorLinesChange={setErrorLines}
+            // Removed onErrorLinesChange prop since errorLines state is deleted
           />
         )}
 
